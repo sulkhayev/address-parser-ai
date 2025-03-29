@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azerbaijani Address Parser</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .parser-container {
+            display: flex;
+            gap: 20px;
+        }
+        .input-section, .result-section {
+            flex: 1;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .input-section {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+        }
+        .result-section {
+            background-color: #f0f8ff;
+            border: 1px solid #cce5ff;
+        }
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+            resize: vertical;
+        }
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px 0;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .batch-container {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .batch-results {
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .batch-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+        .error {
+            color: red;
+        }
+        .loading {
+            display: none;
+            margin: 10px 0;
+            color: #666;
+        }
+        .model-toggle {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .toggle-container {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+        .toggle-container input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 30px;
+        }
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .toggle-slider {
+            background-color: #2196F3;
+        }
+        input:checked + .toggle-slider:before {
+            transform: translateX(30px);
+        }
+    </style>
+</head>
+<body>
+    <h1>Azerbaijani Address Parser</h1>
+    
+    <div class="container">
+        <!-- Single Address Parser -->
+        <div class="parser-container">
+            <div class="input-section">
+                <h2>Enter Address</h2>
+                <textarea id="address-input" placeholder="Enter an address to parse..."></textarea>
+                
+                <div class="model-toggle">
+                    <label class="toggle-container">
+                        <input type="checkbox" id="model-toggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span>Use BERT model (if available)</span>
+                </div>
+                
+                <div class="loading" id="single-loading">Processing...</div>
+                <button id="parse-btn">Parse Address</button>
+            </div>
+            
+            <div class="result-section">
+                <h2>Parsed Results</h2>
+                <div id="parse-error" class="error"></div>
+                <table id="result-table">
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>City</td>
+                            <td id="city-result">-</td>
+                        </tr>
+                        <tr>
+                            <td>Region</td>
+                            <td id="region-result">-</td>
+                        </tr>
+                        <tr>
+                            <td>Settlement</td>
+                            <td id="settlement-result">-</td>
+                        </tr>
+                        <tr>
+                            <td>Street</td>
+                            <td id="street-result">-</td>
+                        </tr>
+                        <tr>
+                            <td>Building</td>
+                            <td id="building-result">-</td>
+                        </tr>
+                        <tr>
+                            <td>Apartment</td>
+                            <td id="apartment-result">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Batch Address Parser -->
+        <div class="batch-container">
+            <h2>Batch Processing</h2>
+            <p>Enter multiple addresses, one per line:</p>
+            <textarea id="batch-input" placeholder="Enter multiple addresses, one per line..."></textarea>
+            
+            <div class="model-toggle">
+                <label class="toggle-container">
+                    <input type="checkbox" id="batch-model-toggle">
+                    <span class="toggle-slider"></span>
+                </label>
+                <span>Use BERT model (if available)</span>
+            </div>
+            
+            <div class="loading" id="batch-loading">Processing...</div>
+            <button id="batch-btn">Process Batch</button>
+            
+            <div class="batch-results" id="batch-results">
+                <!-- Results will be inserted here -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Elements
+            const addressInput = document.getElementById('address-input');
+            const parseBtn = document.getElementById('parse-btn');
+            const parseError = document.getElementById('parse-error');
+            const singleLoading = document.getElementById('single-loading');
+            const modelToggle = document.getElementById('model-toggle');
+            
+            const batchInput = document.getElementById('batch-input');
+            const batchBtn = document.getElementById('batch-btn');
+            const batchResults = document.getElementById('batch-results');
+            const batchLoading = document.getElementById('batch-loading');
+            const batchModelToggle = document.getElementById('batch-model-toggle');
+            
+            // Single address parsing
+            parseBtn.addEventListener('click', async () => {
+                const address = addressInput.value.trim();
+                if (!address) {
+                    parseError.textContent = 'Please enter an address';
+                    return;
+                }
+                
+                parseError.textContent = '';
+                singleLoading.style.display = 'block';
+                
+                try {
+                    const response = await fetch('/parse', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ 
+                            address,
+                            use_bert: modelToggle.checked
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (response.ok) {
+                        // Display results
+                        document.getElementById('city-result').textContent = result.city || '-';
+                        document.getElementById('region-result').textContent = result.region || '-';
+                        document.getElementById('settlement-result').textContent = result.settlement || '-';
+                        document.getElementById('street-result').textContent = result.street || '-';
+                        document.getElementById('building-result').textContent = result.building || '-';
+                        document.getElementById('apartment-result').textContent = result.apartment || '-';
+                    } else {
+                        parseError.textContent = result.error || 'Error parsing address';
+                    }
+                } catch (error) {
+                    parseError.textContent = 'Network error: ' + error.message;
+                } finally {
+                    singleLoading.style.display = 'none';
+                }
+            });
+            
+            // Batch processing
+            batchBtn.addEventListener('click', async () => {
+                const addresses = batchInput.value.trim().split('\n')
+                    .filter(line => line.trim().length > 0);
+                
+                if (addresses.length === 0) {
+                    batchResults.innerHTML = '<div class="error">Please enter at least one address</div>';
+                    return;
+                }
+                
+                batchResults.innerHTML = '';
+                batchLoading.style.display = 'block';
+                
+                try {
+                    const response = await fetch('/batch', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ 
+                            addresses,
+                            use_bert: batchModelToggle.checked
+                        })
+                    });
+                    
+                    const results = await response.json();
+                    
+                    if (response.ok) {
+                        // Display batch results
+                        results.forEach(item => {
+                            const resultHtml = `
+                                <div class="batch-item">
+                                    <strong>Original:</strong> ${item.original}
+                                    <table>
+                                        <tr>
+                                            <td>City</td>
+                                            <td>${item.parsed.city || '-'}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Region</td>
+                                            <td>${item.parsed.region || '-'}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Settlement</td>
+                                            <td>${item.parsed.settlement || '-'}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Street</td>
+                                            <td>${item.parsed.street || '-'}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Building</td>
+                                            <td>${item.parsed.building || '-'}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Apartment</td>
+                                            <td>${item.parsed.apartment || '-'}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            `;
+                            batchResults.innerHTML += resultHtml;
+                        });
+                    } else {
+                        batchResults.innerHTML = `<div class="error">${results.error || 'Error processing batch'}</div>`;
+                    }
+                } catch (error) {
+                    batchResults.innerHTML = `<div class="error">Network error: ${error.message}</div>`;
+                } finally {
+                    batchLoading.style.display = 'none';
+                }
+            });
+            
+            // Load example address
+            addressInput.value = "R.BAĞIROV KÜÇ EV 28/1 XƏTAİ R";
+            
+            // Load example batch
+            batchInput.value = "9MKRŞ MİR CƏLAL KÜÇ, 9, M 12\nZIĞ QƏS. NİZAMİ KÜŞ EV 60\nV.ƏLİYEV K241";
+        });
+    </script>
+</body>
+</html>
