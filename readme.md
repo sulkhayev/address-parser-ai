@@ -220,6 +220,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Acknowledgments
 
-- Developed by [Your Name]
+- Developed by Hijran Sulkhayev (--> Claude AI)
 - Uses [Transformers](https://github.com/huggingface/transformers) for BERT implementation
 - Uses [scikit-learn](https://scikit-learn.org/) for traditional ML models
