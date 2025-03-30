@@ -17,11 +17,11 @@ class AddressDataPreparation:
     def __init__(self):
         # Patterns for rule-based extraction
         self.patterns = {
-            'region': r'\b(XƏTAİ|NİZAMİ|NƏSİMİ|YASAMAL|SABUNÇU|BİNƏQƏDİ|SABİRABAD|AQSTAFA|NƏRİMANOV|SURAXANI|SƏBAİL|XƏZƏR|ABŞERON|FÜZÜLİ|UCAR|BƏRDƏ|MASALLİ|YARDIMLI|GÖYÇAY|ŞABRAN|NAX|NEFTCALA)\b(?:\s+R(?:AY)?\.?)?',
+            'region': r'\b(MİNGƏÇEVİR|NAXÇIVAN|ŞƏKİ|YEVLAX|ŞİRVAN|LƏNKƏRAN|ŞƏMKİR|XANKƏNDİ|NAFTALAN|QƏBƏLƏ|ŞAMAXI|QUBA|ZAQATALA|GÖYÇAY|TOVUZ|BALAKƏN|AĞDAM|AĞDAŞ|AĞSTAFA|ASTARA|BƏRDƏ|BEYLƏQAN|BİLƏSUVAR|CƏLİLABAD|DAŞKƏSƏN|ƏLİ BAYRAMLI|FÜZULİ|GORANBOY|GÖYGÖL|HACIQABUL|İMİŞLİ|İSMAYILLI|KÜRDƏMİR|LERİK|MASALLI|NEFTÇALA|OĞUZ|QAX|QAZAX|QOBUSTAN|QUSAR|SAATLI|SABİRABAD|SALYAN|SİYƏZƏN|TƏRTƏR|UCAR|XAÇMAZ|XIZI|XOCALI|YARDIMLI)\b(?:\s+R(?:AY)?\.?)?',
             'settlement': r'\b([A-ZƏİĞŞÇÖÜ\s]+)\s+QƏS(?:\.|-|\b)',
-            'street': r'\b([A-ZƏİĞŞÇÖÜ\.\s]+(?:KÜ[CÇ]|PR|K|KÜŞƏ?)\.?)\b',
+            'street': r'\b([A-ZƏİĞŞÇÖÜ\.\s]+(?:KÜ[CÇ]|PR|K|DÖN|KÜÇƏ?)\.?)\b',
             'building': r'\b(?:EV|BİNA)\s+([0-9]+(?:\/[0-9]+)?(?:[A-Z\"]+)?)',
-            'apartment': r'\bM(?:ƏN)?\.?\s+([0-9]+(?:\/[0-9]+)?(?:[A-Za-z]+)?)'
+            'apartment': r'\bM(?:ƏN|M.|MƏN)?\.?\s+([0-9]+(?:\/[0-9]+)?(?:[A-Za-z]+)?)'
         }
         
         self.components = ['city', 'region', 'settlement', 'street', 'building', 'apartment']
@@ -31,12 +31,10 @@ class AddressDataPreparation:
                       'NAXÇIVAN', 'LƏNKƏRAN', 'ŞƏKİ', 'YEVLAX', 'ŞIRVAN']
         
         # Known regions
-        self.regions = ['XƏTAİ', 'NİZAMİ', 'NƏSİMİ', 'YASAMAL', 'SABUNÇU', 'BİNƏQƏDİ', 'SABİRABAD','AQSTAFA',
-                       'NƏRİMANOV', 'SURAXANI', 'SƏBAİL', 'XƏZƏR', 'ABŞERON', 'FÜZÜLİ',
-                       'UCAR', 'BƏRDƏ', 'MASALLİ', 'YARDIMLI', 'GÖYÇAY', 'ŞABRAN', 'NAX', 'NEFTCALA']
+        self.regions = ['BAKI','GƏNCƏ','SUMQAYIT','MİNGƏÇEVİR','NAXÇIVAN','ŞƏKİ','YEVLAX','ŞİRVAN','LƏNKƏRAN','ŞƏMKİR','XANKƏNDİ','NAFTALAN','QƏBƏLƏ','ŞAMAXI','QUBA','ZAQATALA','GÖYÇAY','TOVUZ','BALAKƏN','AĞDAM','AĞDAŞ','AĞSTAFA','ASTARA','BƏRDƏ','BEYLƏQAN','BİLƏSUVAR','CƏLİLABAD','DAŞKƏSƏN','ƏLİ BAYRAMLI','FÜZULİ','GORANBOY','GÖYGÖL','HACIQABUL','İMİŞLİ','İSMAYILLI','KÜRDƏMİR','LERİK','MASALLI','NEFTÇALA','OĞUZ','QAX','QAZAX','QOBUSTAN','QUSAR','SAATLI','SABİRABAD','SALYAN','SİYƏZƏN','TƏRTƏR','UCAR','XAÇMAZ','XIZI','XOCALI','YARDIMLI']
         
         # Special street indicators
-        self.street_indicators = ['KÜÇ', 'PR', 'K', 'KÜŞƏ', 'KÇ']
+        self.street_indicators = ['KÜÇ', 'PR', 'K', 'KÜŞƏ', 'KÜÇƏ', 'KÇ', 'DÖN', 'KÜÇƏSI', 'DÖNGƏ', 'KÜÇƏSİ']
     
     def preprocess_address(self, address):
         """Clean and normalize address string"""

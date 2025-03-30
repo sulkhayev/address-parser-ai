@@ -192,7 +192,7 @@ class AddressParser:
         # 2. Street confidence
         if parsed_result['street']:
             # Check for street indicators
-            street_indicators = ['KÜÇ', 'K', 'PR', 'KÜŞƏ', 'KÇ']
+            street_indicators = ['KÜÇ', 'PR', 'K', 'KÜŞƏ', 'KÜÇƏ', 'KÇ', 'DÖN', 'KÜÇƏSI', 'DÖNGƏ', 'KÜÇƏSİ']
             has_indicator = any(indicator in parsed_result['street'] for indicator in street_indicators)
             
             if has_indicator:
@@ -231,10 +231,8 @@ class AddressParser:
         # 5. Region confidence
         if parsed_result['region']:
             # Check for common regions
-            common_regions = [
-                'XƏTAİ', 'NİZAMİ', 'NƏSİMİ', 'YASAMAL', 'SABUNÇU', 'BİNƏQƏDİ', 
-                'NƏRİMANOV', 'SURAXANI', 'SƏBAİL', 'XƏZƏR', 'ABŞERON', 'FÜZÜLİ'
-            ]
+            common_regions = ['BAKI','GƏNCƏ','SUMQAYIT','MİNGƏÇEVİR','NAXÇIVAN','ŞƏKİ','YEVLAX','ŞİRVAN','LƏNKƏRAN','ŞƏMKİR','XANKƏNDİ','NAFTALAN','QƏBƏLƏ','ŞAMAXI','QUBA','ZAQATALA','GÖYÇAY','TOVUZ','BALAKƏN','AĞDAM','AĞDAŞ','AĞSTAFA','ASTARA','BƏRDƏ','BEYLƏQAN','BİLƏSUVAR','CƏLİLABAD','DAŞKƏSƏN','ƏLİ BAYRAMLI','FÜZULİ','GORANBOY','GÖYGÖL','HACIQABUL','İMİŞLİ','İSMAYILLI','KÜRDƏMİR','LERİK','MASALLI','NEFTÇALA','OĞUZ','QAX','QAZAX','QOBUSTAN','QUSAR','SAATLI','SABİRABAD','SALYAN','SİYƏZƏN','TƏRTƏR','UCAR','XAÇMAZ','XIZI','XOCALI','YARDIMLI']
+        
             if parsed_result['region'] in common_regions:
                 confidence['components']['region'] = 0.9
             else:
